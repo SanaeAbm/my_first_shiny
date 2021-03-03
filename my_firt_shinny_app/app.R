@@ -19,7 +19,7 @@ Film=Film%>% mutate(Origin = replace(Origin, Origin==3, "ITL"))
 Film=Film%>% mutate(Origin = replace(Origin, Origin==4, "CANADA"))
 
 
-ui <- navbarPage("Film data in R Shinny App",
+ui <- navbarPage("Film data in a Shinny App",
                  tabPanel("Data set description",
                           includeText("description.txt")),
                  tabPanel("Descriptive statistics",
@@ -70,9 +70,11 @@ ui <- navbarPage("Film data in R Shinny App",
 server <- function(input, output){
     df <- reactive({
         x<-as.data.frame.table(as.array(summary(Film[,input$select])))
+        names(x)<-c("Statistic","Value")
+        return(x)
     })
-    names(df)<-c("Statistic","Value")
-    output$table <- renderTable(df())
+    
+    output$table <- renderTable(df(),colnames = TRUE)
     
     output$p1 <- renderPlot({
       ggplot(data =Film) + geom_point(mapping = aes(x = Year, y = Time,color=Good),size=4)+ ggtitle( "Duration per year scatterplot")
